@@ -588,7 +588,9 @@
 // ═══════════════════════════════════════════════════════
 // Config — point this at your Flask server
 // ═══════════════════════════════════════════════════════
-const API_BASE = "http://localhost:5000";
+const API_BASE = window.location.protocol === "file:"
+  ? "http://localhost:5000"
+  : window.location.origin;
 
 // ═══════════════════════════════════════════════════════
 // Mode definitions  (must match CONCEPT_LABELS in app.py)

@@ -41,9 +41,9 @@ from pricing_service import (
 # ─────────────────────────────────────────────
 #PROJECT_ROOT = Path(__file__).resolve().parent
 #ENV_FILE     = PROJECT_ROOT / ".env"
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-BASE_DIR     = PROJECT_ROOT
-LOG_PATH     = BASE_DIR / "genai_call_log.csv"
+BASE_DIR = Path(__file__).resolve().parent
+LOG_PATH = Path(os.getenv("LOG_PATH", BASE_DIR / "genai_call_log.csv"))
+PROJECT_ROOT = BASE_DIR.parent
 
 # Project root
 
@@ -272,7 +272,8 @@ def guardrail_call(
 # Flask app
 # ─────────────────────────────────────────────
 app = Flask(__name__)
-CORS(app)   # allow the HTML file to call this from any origin
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*")
+CORS(app, origins=CORS_ORIGINS)
 
 
 @app.route("/")
@@ -451,4 +452,8 @@ if __name__ == "__main__":
     print(f"Log    : {LOG_PATH}")
     print("Serving: http://localhost:5000")
     print("=" * 60)
-    app.run(debug=False, port=5000)
+    app.run(
+        debug=False,
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", "5000")),
+    )

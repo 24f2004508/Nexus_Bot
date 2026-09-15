@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: genai-concepts-lab
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT app:app
+    healthCheckPath: /health
+    envVars:
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        value: "*"

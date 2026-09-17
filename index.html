@@ -604,6 +604,127 @@
   .profile-cell .pc-stat { font: 11px var(--mono); color: var(--muted); }
   .profile-cell .pc-warn { color: var(--warn); }
 
+  /* ── Stepper ── */
+  .clean-stepper {
+    max-width: 900px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+  }
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font: 11px var(--mono);
+    white-space: nowrap;
+  }
+  .step-dot {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+    background: var(--surface);
+    transition: all 0.25s;
+  }
+  .step-item.active .step-dot { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 3px rgba(88,166,255,0.15); }
+  .step-item.done .step-dot { background: var(--accent2); border-color: var(--accent2); color: #0d1117; }
+  .step-item.active .step-label { color: var(--text); }
+  .step-item.done .step-label { color: var(--accent2); }
+  .step-line { flex: 1; height: 1px; background: var(--border); margin: 0 10px; min-width: 20px; }
+  .step-line.done { background: var(--accent2); }
+
+  /* ── Summary chips ── */
+  .summary-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 14px 0 4px;
+  }
+  .summary-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    min-width: 128px;
+    flex: 1;
+  }
+  .summary-chip .sc-num { font: 700 20px var(--mono); color: var(--accent); line-height: 1.1; }
+  .summary-chip.sc-danger .sc-num { color: var(--warn); }
+  .summary-chip.sc-warn .sc-num { color: var(--amber); }
+  .summary-chip.sc-ok .sc-num { color: var(--accent2); }
+  .summary-chip .sc-label { font: 10px var(--mono); color: var(--muted); letter-spacing: 0.04em; margin-top: 2px; }
+
+  /* ── Category filter chips ── */
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 4px 0 14px;
+  }
+  .filter-chip {
+    background: var(--pill-bg);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font: 11px var(--mono);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .filter-chip:hover { border-color: var(--accent); color: var(--text); }
+  .filter-chip.active { background: var(--accent); border-color: var(--accent); color: #0d1117; font-weight: 600; }
+
+  /* ── Plan rows: severity + interactivity ── */
+  .plan-table tr.op-row { cursor: pointer; transition: background 0.12s; }
+  .plan-table tr.op-row:hover { background: rgba(88,166,255,0.06); }
+  .plan-table tr.op-row.unchecked { opacity: 0.45; }
+  .plan-table tr.op-row.hl-orange { box-shadow: inset 3px 0 0 var(--amber); }
+  .severity-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+  .sev-high   { background: var(--warn); }
+  .sev-medium { background: var(--amber); }
+  .sev-low    { background: var(--accent); }
+  .action-pill.pill-drop  { color: var(--warn); border-color: var(--warn); }
+  .action-pill.pill-flag  { color: var(--amber); border-color: var(--amber); }
+  .action-pill.pill-fill  { color: var(--accent); border-color: var(--accent); }
+  .action-pill.pill-noop  { color: var(--muted); }
+
+  /* ── Assistant confirm bubble ── */
+  .assistant-bubble {
+    display: flex;
+    gap: 12px;
+    background: linear-gradient(180deg, rgba(88,166,255,0.07), rgba(88,166,255,0.02));
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-top: 14px;
+  }
+  .assistant-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .assistant-text { font-size: 12px; color: var(--text); line-height: 1.6; }
+  .assistant-text b { color: var(--accent); }
+  .assistant-text .ab-list { margin: 6px 0 0; padding-left: 18px; color: var(--muted); }
+  .assistant-text .ab-list li { margin-bottom: 2px; }
+
+  /* ── Empty / clean state ── */
+  .clean-empty-state {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--muted);
+  }
+  .clean-empty-state .ces-icon { font-size: 34px; margin-bottom: 10px; }
+  .clean-empty-state .ces-title { color: var(--accent2); font: 600 13px var(--mono); margin-bottom: 4px; }
+
   @media (max-width: 760px) {
     body { grid-template-columns: 1fr; grid-template-rows: 48px auto 1fr; }
     aside { grid-row: 2; border-right: 0; border-bottom: 1px solid var(--border); max-height: 150px; display: block; overflow-x: auto; white-space: nowrap; padding: 8px 0; }
@@ -614,6 +735,7 @@
     .workbench-grid { grid-template-columns: 1fr; }
     .work-card.wide { grid-column: auto; }
     .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .clean-stepper { overflow-x: auto; }
   }
 
   /* error toast */
@@ -789,7 +911,17 @@
 <section id="cleaningView">
   <div class="clean-head">
     <h2>🧹 LLM Data Cleaning</h2>
-    <p>Upload an Excel file, let the LLM analyse every column, review its proposed operations, then apply and download a clean copy.</p>
+    <p>Think of this as your data-quality actuary: upload a policy file, it runs the standard exceptions review, then you sign off on exactly what gets changed.</p>
+  </div>
+
+  <div class="clean-stepper" id="cleanStepper">
+    <div class="step-item active" data-step="1"><span class="step-dot">1</span><span class="step-label">Upload</span></div>
+    <div class="step-line" data-line="1"></div>
+    <div class="step-item" data-step="2"><span class="step-dot">2</span><span class="step-label">Exceptions review</span></div>
+    <div class="step-line" data-line="2"></div>
+    <div class="step-item" data-step="3"><span class="step-dot">3</span><span class="step-label">Sign-off</span></div>
+    <div class="step-line" data-line="3"></div>
+    <div class="step-item" data-step="4"><span class="step-dot">4</span><span class="step-label">Download</span></div>
   </div>
 
   <div class="clean-grid">
@@ -797,7 +929,7 @@
     <!-- Step 1: upload -->
     <div class="clean-card">
       <h3>STEP 1 · UPLOAD FILE</h3>
-      <p>Drop an .xlsx, .xls or .csv file below. The LLM will profile each column and propose targeted cleaning operations.</p>
+      <p>Drop a policy extract below (.xlsx, .xls or .csv). It'll run the standard checks — non-mandatory fields, DOB/age, status-movement, and missing mandatory data (DOB, SA, Gender, PREV STATUSCODE) — plus anything else the LLM spots.</p>
 
       <div class="upload-zone" id="uploadZone">
         <input type="file" id="cleanFile" accept=".xlsx,.xls,.csv">
@@ -809,7 +941,7 @@
       <div class="sheet-row">
         <label for="sheetSelect">Sheet:</label>
         <select id="sheetSelect" disabled><option>— upload a file first —</option></select>
-        <button id="analyseBtn" disabled>Analyse with LLM ↗</button>
+        <button id="analyseBtn" disabled>Run exceptions review ↗</button>
       </div>
       <div id="cleanStatus">No file uploaded yet.</div>
     </div>
@@ -818,6 +950,9 @@
     <div class="clean-card" id="planSection">
       <h3>STEP 2 · REVIEW PROPOSED OPERATIONS</h3>
       <p class="plan-intro" id="planIntro"></p>
+
+      <div class="summary-chips" id="summaryChips"></div>
+      <div class="filter-row" id="filterRow"></div>
 
       <table class="plan-table" id="planTable">
         <thead>
@@ -832,13 +967,27 @@
         </thead>
         <tbody id="planBody"></tbody>
       </table>
+      <div class="clean-empty-state" id="cleanEmptyState" style="display:none">
+        <div class="ces-icon">✅</div>
+        <div class="ces-title">Clean bill of health</div>
+        <div>No exceptions found — this file already passes the standard checks.</div>
+      </div>
 
       <div class="apply-row">
         <label class="select-all-label">
           <input type="checkbox" id="selectAllOps" checked>
           Select all
         </label>
-        <button id="applyBtn">Apply selected &amp; download ↓</button>
+        <span id="selectedCount" style="font:11px var(--mono);color:var(--muted)"></span>
+      </div>
+
+      <div class="assistant-bubble" id="assistantBubble" style="display:none">
+        <div class="assistant-avatar">🧮</div>
+        <div class="assistant-text" id="assistantText"></div>
+      </div>
+
+      <div class="apply-row">
+        <button id="applyBtn">Confirm &amp; apply selected ↓</button>
         <button id="downloadCleanBtn">↓ Download cleaned file</button>
       </div>
       <div id="cleanLog"></div>
@@ -1349,12 +1498,61 @@ function showToast(msg) {
   const selectAllOps   = document.getElementById("selectAllOps");
   const profileSection = document.getElementById("profileSection");
   const profileGrid    = document.getElementById("profileGrid");
+  const summaryChips   = document.getElementById("summaryChips");
+  const filterRow      = document.getElementById("filterRow");
+  const cleanEmptyState = document.getElementById("cleanEmptyState");
+  const assistantBubble = document.getElementById("assistantBubble");
+  const assistantText   = document.getElementById("assistantText");
+  const selectedCount   = document.getElementById("selectedCount");
+  const stepper         = document.getElementById("cleanStepper");
 
   let uploadedFile  = null;
   let currentPlan   = [];
   let currentSheet  = "";
   let cleanedBlob   = null;
   let cleanedName   = "cleaned.xlsx";
+  let activeFilter  = "All";
+  let checkedState  = {}; // op.id -> boolean, persists across filter switches
+
+  // ── Stepper ──
+  function setStep(n) {
+    stepper.querySelectorAll(".step-item").forEach(el => {
+      const s = Number(el.dataset.step);
+      el.classList.toggle("done", s < n);
+      el.classList.toggle("active", s === n);
+      if (s < n) el.querySelector(".step-dot").textContent = "✓";
+      else el.querySelector(".step-dot").textContent = s;
+    });
+    stepper.querySelectorAll(".step-line").forEach(el => {
+      el.classList.toggle("done", Number(el.dataset.line) < n);
+    });
+  }
+
+  // ── Categorise an op for filtering / severity / colour ──
+  function categorise(op) {
+    const issue = (op.issue || "").toLowerCase();
+    let cat = "LLM suggestion", severity = "low";
+    if (issue.includes("non-mandatory")) { cat = "Non-mandatory"; severity = "high"; }
+    else if (issue.includes("under 18") || issue.includes("years old")) { cat = "Age (DOB)"; severity = "medium"; }
+    else if (issue.includes("status movement")) { cat = "Status movement"; severity = "high"; }
+    else if (issue.includes("mandatory field")) { cat = "Missing mandatory data"; severity = "medium"; }
+    else if (op.action === "drop_column") { severity = "high"; }
+    else if (op.action === "flag_rows" || op.action === "flag_outliers") { severity = "medium"; }
+    return { cat, severity };
+  }
+
+  function pillClass(action) {
+    if (action === "drop_column" || action === "drop_duplicates") return "pill-drop";
+    if (action === "flag_rows" || action === "flag_outliers") return "pill-flag";
+    if (action === "no_op") return "pill-noop";
+    return "pill-fill";
+  }
+
+  function opRowCount(op) {
+    if (op.params && Array.isArray(op.params.row_indices)) return op.params.row_indices.length;
+    const m = (op.issue || "").match(/(\d+)/);
+    return m ? Number(m[1]) : null;
+  }
 
   // ── Drag-and-drop + click upload ──
   uploadZone.addEventListener("dragover", e => { e.preventDefault(); uploadZone.classList.add("drag-over"); });
@@ -1389,6 +1587,8 @@ function showToast(msg) {
     cleanedBlob  = null;
     downloadBtn.style.display = "none";
     cleanLog.style.display = "none";
+    assistantBubble.style.display = "none";
+    setStep(1);
     // Pre-populate sheet select by reading the file headers client-side isn't easy;
     // the sheet list comes back from /clean/analyse so we'll populate after the call.
     if (isCsv) {
@@ -1438,6 +1638,7 @@ function showToast(msg) {
         `. ${currentPlan.length} operations proposed.${warningLine}`);
       renderPlan(currentPlan, data);
       renderProfile(data.profile);
+      setStep(2);
 
     } catch (err) {
       setStatus("❌  Error: " + err.message, true);
@@ -1448,46 +1649,152 @@ function showToast(msg) {
 
   // ── Render plan table ──
   function renderPlan(plan, data) {
-    planIntro.textContent =
-      `The LLM reviewed ${data.n_cols} columns and proposed ${plan.length} cleaning steps. ` +
-      `Tick the ones you want to apply, then click Apply.`;
+    // annotate each op with derived category/severity once
+    plan.forEach(op => { const c = categorise(op); op._cat = c.cat; op._severity = c.severity; });
+    checkedState = {};
+    plan.forEach(op => { checkedState[op.id] = true; });
 
-    planBody.innerHTML = plan.map(op => `
-      <tr>
-        <td class="col-check"><input type="checkbox" class="op-check" data-id="${op.id}" checked></td>
-        <td style="font-family:var(--mono);font-size:11px;color:var(--muted)">${op.id}</td>
-        <td style="font-family:var(--mono);font-size:11px;word-break:break-all">${esc(op.column)}</td>
-        <td class="issue-text">${esc(op.issue)}</td>
-        <td><span class="action-pill">${esc(op.action)}</span></td>
-        <td class="rationale-text">${esc(op.rationale)}</td>
-      </tr>`).join("");
+    planIntro.textContent =
+      `The review scanned ${data.n_cols} columns and raised ${plan.length} item(s) for your attention. ` +
+      `Tick the ones you'd like actioned, then confirm.`;
+
+    if (plan.length === 0) {
+      cleanEmptyState.style.display = "block";
+      document.getElementById("planTable").style.display = "none";
+      summaryChips.innerHTML = "";
+      filterRow.innerHTML = "";
+      assistantBubble.style.display = "none";
+      document.querySelector(".apply-row").style.display = "none";
+      planSection.style.display = "block";
+      return;
+    }
+    cleanEmptyState.style.display = "none";
+    document.getElementById("planTable").style.display = "table";
+    document.querySelectorAll(".apply-row").forEach(r => r.style.display = "flex");
+
+    renderSummaryChips(plan);
+    renderFilterChips(plan);
+    renderRows(plan);
 
     planSection.style.display = "block";
     applyBtn.disabled = false;
     downloadBtn.style.display = "none";
+    updateAssistantBubble();
+  }
+
+  function renderSummaryChips(plan) {
+    const flaggedRows = plan.reduce((sum, op) => sum + (opRowCount(op) || 0), 0);
+    const drops   = plan.filter(op => op.action === "drop_column").length;
+    const missing = plan.filter(op => op._cat === "Missing mandatory data").length;
+    const high    = plan.filter(op => op._severity === "high").length;
+
+    const chips = [
+      { num: plan.length,   label: "ITEMS RAISED",        cls: "" },
+      { num: high,          label: "HIGH PRIORITY",       cls: "sc-danger" },
+      { num: flaggedRows,   label: "ROWS FLAGGED",        cls: "sc-warn" },
+      { num: drops,         label: "COLUMNS TO DROP",     cls: "sc-danger" },
+      { num: missing,       label: "MANDATORY FIELDS AFFECTED", cls: "sc-warn" },
+    ];
+    summaryChips.innerHTML = chips.map(c => `
+      <div class="summary-chip ${c.cls}">
+        <div class="sc-num">${c.num}</div>
+        <div class="sc-label">${c.label}</div>
+      </div>`).join("");
+  }
+
+  function renderFilterChips(plan) {
+    const cats = ["All", ...new Set(plan.map(op => op._cat))];
+    activeFilter = "All";
+    filterRow.innerHTML = cats.map(cat => {
+      const count = cat === "All" ? plan.length : plan.filter(op => op._cat === cat).length;
+      return `<span class="filter-chip${cat === "All" ? " active" : ""}" data-cat="${esc(cat)}">${esc(cat)} (${count})</span>`;
+    }).join("");
+    filterRow.querySelectorAll(".filter-chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        activeFilter = chip.dataset.cat;
+        filterRow.querySelectorAll(".filter-chip").forEach(c => c.classList.toggle("active", c === chip));
+        renderRows(currentPlan);
+      });
+    });
+  }
+
+  function renderRows(plan) {
+    const visible = activeFilter === "All" ? plan : plan.filter(op => op._cat === activeFilter);
+    planBody.innerHTML = visible.map(op => `
+      <tr class="op-row" data-id="${op.id}">
+        <td class="col-check"><input type="checkbox" class="op-check" data-id="${op.id}"${checkedState[op.id] ? " checked" : ""}></td>
+        <td style="font-family:var(--mono);font-size:11px;color:var(--muted)">${op.id}</td>
+        <td style="font-family:var(--mono);font-size:11px;word-break:break-all">${esc(op.column)}</td>
+        <td class="issue-text"><span class="severity-dot sev-${op._severity}"></span>${esc(op.issue)}</td>
+        <td><span class="action-pill ${pillClass(op.action)}">${esc(op.action)}</span></td>
+        <td class="rationale-text">${esc(op.rationale)}</td>
+      </tr>`).join("");
+
+    // clicking anywhere on the row toggles its checkbox (except double-toggling the checkbox itself)
+    planBody.querySelectorAll("tr.op-row").forEach(row => {
+      row.addEventListener("click", (e) => {
+        if (e.target.type === "checkbox") return;
+        const cb = row.querySelector(".op-check");
+        cb.checked = !cb.checked;
+        cb.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+    });
+    planBody.querySelectorAll(".op-check").forEach(cb => {
+      cb.addEventListener("change", () => {
+        checkedState[Number(cb.dataset.id)] = cb.checked;
+        cb.closest("tr").classList.toggle("unchecked", !cb.checked);
+        updateAssistantBubble();
+      });
+      cb.closest("tr").classList.toggle("unchecked", !cb.checked);
+    });
+    updateAssistantBubble();
+  }
+
+  function updateAssistantBubble() {
+    const selected = currentPlan.filter(op => checkedState[op.id]);
+    selectedCount.textContent = `${selected.length} of ${currentPlan.length} selected`;
+    selectAllOps.checked = selected.length === currentPlan.length;
+
+    if (selected.length === 0) {
+      assistantBubble.style.display = "none";
+      return;
+    }
+    const byCat = {};
+    selected.forEach(op => { byCat[op._cat] = (byCat[op._cat] || 0) + 1; });
+    const listItems = Object.entries(byCat)
+      .map(([cat, n]) => `<li>${n} × ${esc(cat)}</li>`).join("");
+
+    assistantText.innerHTML =
+      `I'll apply <b>${selected.length}</b> of the ${currentPlan.length} items you reviewed:` +
+      `<ul class="ab-list">${listItems}</ul>` +
+      `Nothing is written to the file until you click Confirm &amp; apply.`;
+    assistantBubble.style.display = "flex";
   }
 
   // ── Select-all toggle ──
   selectAllOps.addEventListener("change", () => {
-    document.querySelectorAll(".op-check").forEach(cb => cb.checked = selectAllOps.checked);
+    currentPlan.forEach(op => { checkedState[op.id] = selectAllOps.checked; });
+    document.querySelectorAll(".op-check").forEach(cb => {
+      cb.checked = selectAllOps.checked;
+      cb.closest("tr").classList.toggle("unchecked", !cb.checked);
+    });
+    updateAssistantBubble();
   });
 
   // ── Apply ──
   applyBtn.addEventListener("click", async () => {
     if (!uploadedFile) return;
-    const checkedIds = new Set(
-      [...document.querySelectorAll(".op-check:checked")].map(cb => Number(cb.dataset.id))
-    );
-    const selectedPlan = currentPlan.filter(op => checkedIds.has(op.id));
+    const selectedPlan = currentPlan.filter(op => checkedState[op.id]);
     if (selectedPlan.length === 0) {
       setStatus("⚠️  No operations selected.", true);
       return;
     }
 
     applyBtn.disabled = true;
-    setStatus(`⏳  Applying ${selectedPlan.length} operations…`);
+    setStatus(`⏳  Applying ${selectedPlan.length} confirmed operations…`);
     cleanLog.style.display = "none";
     downloadBtn.style.display = "none";
+    setStep(3);
 
     const form = new FormData();
     form.append("file",  uploadedFile);
@@ -1515,6 +1822,7 @@ function showToast(msg) {
 
       setStatus(`✅  Done! ${selectedPlan.length} operations applied. Click Download to save.`);
       downloadBtn.style.display = "inline-block";
+      setStep(4);
 
     } catch (err) {
       setStatus("❌  Apply error: " + err.message, true);

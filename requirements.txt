@@ -1,7 +1,9 @@
 Flask
 flask-cors
 python-dotenv
-google-genai
 gunicorn
 pandas
 openpyxl
+agno==3.0.10
+google-genai
+ddgs==9.16.0

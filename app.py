@@ -5,8 +5,8 @@ Exposes the guardrail logic from 01_genai_basics.py as a REST API.
 The frontend (index.html) calls POST /chat for every user message.
 
 Run:
-    pip install flask flask-cors anthropic python-dotenv
-    export ANTHROPIC_API_KEY=sk-ant-...
+    pip install -r requirements.txt
+    export GOOGLE_API_KEY=...
     python app.py
 
 Endpoints:
@@ -17,19 +17,18 @@ Endpoints:
 
 import csv
 import datetime
-import json
 import os
-import pathlib
-import re
 from pathlib import Path
+
 from data_cleaning import data_cleaning_bp, init_cleaning
 
 
-#import anthropic
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
-from google import genai
+from agno.agent import Agent
+from agno.models.google import Gemini
+from agno.run.base import RunStatus
 from pricing_service import (
     calculate_ip_premium,
     calculate_pmi_premium,
@@ -39,40 +38,58 @@ from pricing_service import (
 )
 
 # ─────────────────────────────────────────────
-# §1 · Setup  (mirrors 01_genai_basics.py §1)
+# §1 · Setup
 # ─────────────────────────────────────────────
-#PROJECT_ROOT = Path(__file__).resolve().parent
-#ENV_FILE     = PROJECT_ROOT / ".env"
 BASE_DIR = Path(__file__).resolve().parent
 LOG_PATH = Path(os.getenv("LOG_PATH", BASE_DIR / "genai_call_log.csv"))
 PROJECT_ROOT = BASE_DIR.parent
 
 # Project root
 
-ENV_FILE = PROJECT_ROOT / ".env"
+ENV_FILE = BASE_DIR / ".env"
 
-# Load .env
-load_dotenv(ENV_FILE, override=True)
+# Load .env (do not override existing environment variables)
+load_dotenv(ENV_FILE, override=False)
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-#load_dotenv(ENV_FILE, override=True)
-
-#GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "").strip()
 if not GOOGLE_API_KEY:
     raise RuntimeError(
         "GOOGLE_API_KEY not set. "
         f"Add it to {ENV_FILE} or export it in your shell."
     )
 
-client = genai.Client(api_key=GOOGLE_API_KEY)
-MODEL  = "gemini-3.5-flash-lite"
+# CFG-01: single source of truth for the active Gemini model. Chat Lab
+# (guardrail_call) and the Data Cleaning Agent (init_cleaning -> cleaning_agent.
+# build_agent) both receive this same MODEL value — there is nowhere else in
+# the live app that names a model. Override via GEMINI_MODEL for local testing
+# or a future model migration without a code change. The standalone teaching
+# scripts (01_genai_basics.py, 02_models_as_tools.py, 05_pricing_team.py) are
+# intentionally independent of this — they are seminar examples, not part of
+# the running app, and may reference a different model on purpose.
+MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+
+# PERF-01: bounded operational limits, all overridable via env vars so a
+# deployment can tune them without a code change.
+MAX_PROMPT_CHARS = int(os.getenv("MAX_PROMPT_CHARS", "8000"))
+MAX_HISTORY_TURNS = int(os.getenv("MAX_HISTORY_TURNS", "40"))
+MAX_HISTORY_TURN_CHARS = int(os.getenv("MAX_HISTORY_TURN_CHARS", "8000"))
+MODEL_TIMEOUT_MS = int(os.getenv("MODEL_TIMEOUT_MS", "30000"))
+MODEL_MAX_ATTEMPTS = int(os.getenv("MODEL_MAX_ATTEMPTS", "3"))  # 1 try + 2 bounded retries
+
+# Create the AGNO Gemini model, talking to the official Google Gemini API.
+model = Gemini(
+    id=MODEL,
+    api_key=GOOGLE_API_KEY,
+    timeout=MODEL_TIMEOUT_MS / 1000,
+    retries=MODEL_MAX_ATTEMPTS - 1,
+)
 
 # ─────────────────────────────────────────────
 # §1.1 · Concept labels  (same keys as the frontend MODES object)
 # ─────────────────────────────────────────────
 CONCEPT_LABELS: dict[str, str] = {
-    "free":          "FREE CHAT",
-    "ccce":          "CCCE PROMPTING",
+    "free":          "CHAT",
+    "ccce":          "PROMPT CREATOR",
     "vague":         "VAGUE vs SPECIFIC",
     "audience":      "MULTI-AUDIENCE",
     "fewshot":       "FEW-SHOT FORMATTING",
@@ -98,12 +115,18 @@ SYSTEM_PROMPTS: dict[str, str] = {
 
     # §3 — CCCE
     "ccce": (
-        "You are a prompt-engineering tutor specialising in actuarial and insurance topics. "
-        "When the user gives a topic or rough question, do TWO things:\n"
-        "1. Show a well-structured CCCE prompt for it, clearly labelling "
-        "[Clarity], [Context], [Constraints], [Examples].\n"
-        "2. Execute that prompt yourself and show the model response.\n"
-        "Separate the two with a clear header. Keep the example voice actuarial/professional."
+        "You are a CCCE Prompt-Builder — a general-purpose agent that helps anyone turn a "
+        "rough task or question, in ANY domain, into a well-structured prompt using the "
+        "CCCE framework (Clarity, Context, Constraints, Examples).\n"
+        "When the user describes a task:\n"
+        "1. If key details are missing (audience, format, tone, length, domain facts, "
+        "desired output), ask up to 3 short, specific clarifying questions before drafting.\n"
+        "2. Once you have enough to work with, output the finished prompt, clearly labelled "
+        "with [Clarity], [Context], [Constraints], [Examples] sections, ready to paste into "
+        "any LLM.\n"
+        "3. After the prompt, add one short line noting any assumption you made to fill a gap.\n"
+        "Do not answer the user's underlying task yourself — your job is to build the prompt, "
+        "not to execute it."
     ),
 
     # §3.1 — vague vs specific
@@ -203,7 +226,7 @@ def log_call(
 
 
 # ─────────────────────────────────────────────
-# §2-§5 · Core call function  (mirrors call() in 01_genai_basics.py)
+# §2-§5 · Core call function
 # ─────────────────────────────────────────────
 def guardrail_call(
     prompt: str,
@@ -219,54 +242,35 @@ def guardrail_call(
 
     sys_prompt = SYSTEM_PROMPTS[mode]
 
-    contents = []
+    # Fold prior turns into the input text — `model` (agno.models.google.Gemini)
+    # has no .run(); AGNO's Agent is the orchestration layer that provides it, so a
+    # lightweight, tool-less Agent per call is used here (same run() call cleaning_agent
+    # uses for the Data Cleaning Agent), with the mode's system prompt as instructions.
+    history_block = ""
+    if history:
+        lines = [f"{h.get('role', 'user')}: {h.get('content', '')}" for h in history]
+        history_block = "Conversation so far:\n" + "\n".join(lines) + "\n\n"
 
-    for msg in history:
-        role = msg.get("role", "user")
-        content = msg.get("content", "")
+    chat_agent = Agent(model=model, instructions=sys_prompt, markdown=True)
+    response = chat_agent.run(f"{history_block}User: {prompt}")
 
-        # Gemini uses "user" and "model"
-        gemini_role = "model" if role == "assistant" else "user"
+    # PROVIDER ERROR HANDLING: after AGNO's own bounded retries are exhausted on a
+    # transient provider failure (rate limit, upstream overload, invalid model, etc.),
+    # RunOutput.status is ERROR and .content holds the raw provider error text — that
+    # must never be surfaced to the user as if it were the assistant's reply.
+    if getattr(response, "status", None) == RunStatus.error:
+        raise RuntimeError(f"model provider error: {response.content}")
 
-        contents.append({
-            "role": gemini_role,
-            "parts": [
-                {"text": content}
-            ],
-        })
+    reply = response.content if hasattr(response, "content") else str(response)
 
-    # Add current user message
-    contents.append({
-        "role": "user",
-        "parts": [
-            {"text": prompt}
-        ],
-    })
+    # Extract token usage if available
+    tokens_in = 0
+    tokens_out = 0
+    metrics = getattr(response, "metrics", None)
+    if metrics:
+        tokens_in = getattr(metrics, "input_tokens", 0) or 0
+        tokens_out = getattr(metrics, "output_tokens", 0) or 0
 
-    response = client.models.generate_content(
-        model=MODEL,
-        contents=contents,
-        config={
-            "system_instruction": sys_prompt,
-            "max_output_tokens": 1200,
-        },
-    )
-
-    reply = response.text or ""
-
-    usage = response.usage_metadata
-
-    tokens_in = (
-        usage.prompt_token_count
-        if usage and usage.prompt_token_count
-        else 0
-    )
-
-    tokens_out = (
-        usage.candidates_token_count
-        if usage and usage.candidates_token_count
-        else 0
-    )
     return reply, tokens_in, tokens_out
 
 
@@ -276,11 +280,31 @@ def guardrail_call(
 app = Flask(__name__)
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*")
 CORS(app, origins=CORS_ORIGINS)
+app.config["MAX_CONTENT_LENGTH"] = int(os.getenv("MAX_UPLOAD_MB", "25")) * 1024 * 1024
+
+
+@app.errorhandler(413)
+def _handle_too_large(_exc):
+    return jsonify({"error": "Request too large."}), 413
+
+
+@app.errorhandler(Exception)
+def _handle_uncaught(exc):
+    """ERROR HANDLING backstop: every route below has its own try/except with a
+    safe message, but this guarantees that even an exception no one anticipated
+    still reaches the client as a controlled JSON error, never a stack trace,
+    file path, or other internal detail — full detail still goes to the
+    server log."""
+    from werkzeug.exceptions import HTTPException
+    if isinstance(exc, HTTPException):
+        return jsonify({"error": exc.description or exc.name}), exc.code
+    app.logger.exception("unhandled exception")
+    return jsonify({"error": "Internal server error."}), 500
 
 
 # right after `app = Flask(__name__)` and `CORS(app, ...)`
 app.register_blueprint(data_cleaning_bp)
-init_cleaning(client, MODEL)   # passes your existing Gemini client
+init_cleaning(model, MODEL)   # passes the AGNO model and model id string
 
 @app.route("/")
 def index():
@@ -311,7 +335,7 @@ def chat():
         {
           "reply":       "assistant text",
           "mode":        "ccce",
-          "label":       "CCCE PROMPTING",
+          "label":       "PROMPT CREATOR",
           "tokens_in":   312,
           "tokens_out":  87,
           "logged":      true
@@ -326,24 +350,34 @@ def chat():
     if not prompt:
         return jsonify({"error": "prompt is required"}), 400
 
+    # PERF-01: bound the prompt and the conversation history sent to the model —
+    # both for cost/latency and so a single request can't grow unbounded.
+    if len(prompt) > MAX_PROMPT_CHARS:
+        return jsonify({"error": f"prompt is too long (max {MAX_PROMPT_CHARS} characters)"}), 400
+
     if mode not in CONCEPT_LABELS:
         return jsonify({"error": f"unknown mode '{mode}'"}), 400
 
-    # Sanitise history — only keep valid role/content pairs
+    if not isinstance(history, list):
+        return jsonify({"error": "history must be a list"}), 400
+
+    # Sanitise history — only keep valid role/content pairs, cap each turn's
+    # length, and keep only the most recent MAX_HISTORY_TURNS turns.
     clean_history = [
-        {"role": h["role"], "content": h["content"]}
+        {"role": h["role"], "content": h["content"][:MAX_HISTORY_TURN_CHARS]}
         for h in history
         if isinstance(h, dict)
         and h.get("role") in ("user", "assistant")
         and isinstance(h.get("content"), str)
-    ]
+    ][-MAX_HISTORY_TURNS:]
 
     try:
         reply, tok_in, tok_out = guardrail_call(prompt, mode, clean_history)
-    #except anthropic.APIStatusError as exc:
-    #    return jsonify({"error": str(exc)}), 502
-    except Exception as exc:
-        return jsonify({"error": str(exc)}), 500
+    except Exception:
+        # ERROR HANDLING: log full detail server-side, never leak SDK/internal
+        # exception text (which could include request internals) to the client.
+        app.logger.exception("guardrail_call failed for mode=%s", mode)
+        return jsonify({"error": "The assistant is temporarily unavailable. Please try again."}), 502
 
     log_call(
         mode=mode,

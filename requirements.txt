@@ -4,3 +4,4 @@ python-dotenv
 google-genai
 gunicorn
 pandas
+openpyxl

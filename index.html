@@ -408,6 +408,202 @@
   .lift-table th, .lift-table td { text-align: left; padding: 6px; border-bottom: 1px solid var(--border); }
   .lift-table th { color: var(--muted); }
 
+  /* ── Data Cleaning view ── */
+  #cleaningView {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    overflow-y: auto;
+    padding: 24px;
+    background: #10161f;
+  }
+  .clean-head { max-width: 900px; margin: 0 auto 18px; }
+  .clean-head h2 { font-size: 21px; font-weight: 500; margin-bottom: 4px; }
+  .clean-head p  { color: var(--muted); font-size: 12px; }
+
+  .clean-grid {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .clean-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+  }
+  .clean-card h3 {
+    color: var(--amber);
+    font-size: 13px;
+    font-family: var(--mono);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .clean-card p { color: var(--muted); font-size: 12px; margin-bottom: 12px; }
+
+  /* upload zone */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+  }
+  .upload-zone:hover, .upload-zone.drag-over {
+    border-color: var(--accent);
+    background: rgba(88,166,255,0.05);
+  }
+  .upload-zone input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .upload-icon { font-size: 28px; margin-bottom: 8px; }
+  .upload-text { font-size: 13px; color: var(--muted); }
+  .upload-text strong { color: var(--accent); }
+  .upload-filename {
+    margin-top: 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent2);
+    display: none;
+  }
+
+  /* sheet selector */
+  .sheet-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .sheet-row label { font: 11px var(--mono); color: var(--muted); }
+  .sheet-row select {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 6px 10px;
+    font: 12px var(--sans);
+  }
+  #analyseBtn, #applyBtn, #downloadCleanBtn {
+    background: var(--accent);
+    color: #0d1117;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font: 600 11px var(--mono);
+    transition: opacity 0.15s;
+  }
+  #analyseBtn:disabled, #applyBtn:disabled { opacity: 0.35; cursor: default; }
+  #analyseBtn:not(:disabled):hover,
+  #applyBtn:not(:disabled):hover,
+  #downloadCleanBtn:hover { opacity: 0.82; }
+  #downloadCleanBtn { background: var(--accent2); display: none; }
+
+  /* plan table */
+  #planSection { display: none; }
+  .plan-intro {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+  .plan-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .plan-table th {
+    text-align: left;
+    padding: 7px 8px;
+    background: var(--surface2);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .plan-table td {
+    padding: 7px 8px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .plan-table tr:last-child td { border-bottom: none; }
+  .plan-table .col-check { width: 36px; text-align: center; }
+  .plan-table input[type="checkbox"] { accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer; }
+  .action-pill {
+    display: inline-block;
+    font: 10px var(--mono);
+    background: var(--pill-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1px 8px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .issue-text { color: var(--warn); font-size: 11px; }
+  .rationale-text { color: var(--muted); font-size: 11px; }
+
+  /* apply controls */
+  .apply-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .select-all-label { font: 11px var(--mono); color: var(--muted); cursor: pointer; display: flex; gap: 6px; align-items: center; }
+
+  /* log / status */
+  #cleanStatus {
+    margin-top: 10px;
+    font: 11px/1.6 var(--mono);
+    color: var(--muted);
+    white-space: pre-wrap;
+    min-height: 22px;
+  }
+  #cleanLog {
+    display: none;
+    margin-top: 10px;
+    background: #0d1117;
+    border: 1px solid var(--border);
+    padding: 10px;
+    font: 11px/1.55 var(--mono);
+    white-space: pre-wrap;
+    color: var(--text);
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  /* profile cards */
+  .profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .profile-cell {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 10px;
+  }
+  .profile-cell .pc-name {
+    font: 600 10px var(--mono);
+    color: var(--accent);
+    margin-bottom: 4px;
+    word-break: break-all;
+  }
+  .profile-cell .pc-stat { font: 11px var(--mono); color: var(--muted); }
+  .profile-cell .pc-warn { color: var(--warn); }
+
   @media (max-width: 760px) {
     body { grid-template-columns: 1fr; grid-template-rows: 48px auto 1fr; }
     aside { grid-row: 2; border-right: 0; border-bottom: 1px solid var(--border); max-height: 150px; display: block; overflow-x: auto; white-space: nowrap; padding: 8px 0; }
@@ -502,6 +698,11 @@
     <span class="mode-tag">§02 + §05 · governed tools and routing</span>
   </button>
 
+  <button class="mode-btn" id="cleaningBtn">
+    <span class="mode-icon">🧹</span>Data Cleaning
+    <span class="mode-tag">LLM-assisted XLSX quality ops</span>
+  </button>
+
   <hr class="sidebar-divider">
   <div class="sidebar-label">SESSION</div>
 
@@ -581,6 +782,77 @@
     </div>
   </section>
 </main>
+
+<!-- ══════════════════════════════════════════════════════════
+     DATA CLEANING VIEW
+     ══════════════════════════════════════════════════════════ -->
+<section id="cleaningView">
+  <div class="clean-head">
+    <h2>🧹 LLM Data Cleaning</h2>
+    <p>Upload an Excel file, let the LLM analyse every column, review its proposed operations, then apply and download a clean copy.</p>
+  </div>
+
+  <div class="clean-grid">
+
+    <!-- Step 1: upload -->
+    <div class="clean-card">
+      <h3>STEP 1 · UPLOAD FILE</h3>
+      <p>Drop an .xlsx, .xls or .csv file below. The LLM will profile each column and propose targeted cleaning operations.</p>
+
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="cleanFile" accept=".xlsx,.xls,.csv">
+        <div class="upload-icon">📂</div>
+        <div class="upload-text">Drag &amp; drop your <strong>.xlsx / .xls / .csv</strong> file, or click to browse</div>
+      </div>
+      <div class="upload-filename" id="uploadFilename"></div>
+
+      <div class="sheet-row">
+        <label for="sheetSelect">Sheet:</label>
+        <select id="sheetSelect" disabled><option>— upload a file first —</option></select>
+        <button id="analyseBtn" disabled>Analyse with LLM ↗</button>
+      </div>
+      <div id="cleanStatus">No file uploaded yet.</div>
+    </div>
+
+    <!-- Step 2: plan review -->
+    <div class="clean-card" id="planSection">
+      <h3>STEP 2 · REVIEW PROPOSED OPERATIONS</h3>
+      <p class="plan-intro" id="planIntro"></p>
+
+      <table class="plan-table" id="planTable">
+        <thead>
+          <tr>
+            <th class="col-check">✔</th>
+            <th>#</th>
+            <th>Column</th>
+            <th>Issue</th>
+            <th>Action</th>
+            <th>Rationale</th>
+          </tr>
+        </thead>
+        <tbody id="planBody"></tbody>
+      </table>
+
+      <div class="apply-row">
+        <label class="select-all-label">
+          <input type="checkbox" id="selectAllOps" checked>
+          Select all
+        </label>
+        <button id="applyBtn">Apply selected &amp; download ↓</button>
+        <button id="downloadCleanBtn">↓ Download cleaned file</button>
+      </div>
+      <div id="cleanLog"></div>
+    </div>
+
+    <!-- Step 3: profile overview -->
+    <div class="clean-card" id="profileSection" style="display:none">
+      <h3>COLUMN PROFILE SNAPSHOT</h3>
+      <p>Null counts and outlier flags from the uploaded file (before cleaning).</p>
+      <div class="profile-grid" id="profileGrid"></div>
+    </div>
+
+  </div>
+</section>
 
 <div id="toast"></div>
 
@@ -709,6 +981,8 @@ const clearBtn      = document.getElementById("clearBtn");
 const toast         = document.getElementById("toast");
 const pricingBtn    = document.getElementById("pricingBtn");
 const pricingView   = document.getElementById("pricingView");
+const cleaningBtn   = document.getElementById("cleaningBtn");
+const cleaningView  = document.getElementById("cleaningView");
 const chatParts     = [contextBanner, chatScroll, document.querySelector(".input-area")];
 
 // ═══════════════════════════════════════════════════════
@@ -774,12 +1048,33 @@ document.querySelectorAll(".mode-btn[data-mode]").forEach(b =>
   b.addEventListener("click", () => setMode(b.dataset.mode))
 );
 
+function hideAllViews() {
+  pricingView.style.display  = "none";
+  cleaningView.style.display = "none";
+  chatParts.forEach(part => { part.style.display = ""; });
+  pricingBtn.classList.remove("active");
+  cleaningBtn.classList.remove("active");
+}
+
 pricingBtn.addEventListener("click", () => {
   const isPricing = pricingView.style.display === "block";
-  pricingView.style.display = isPricing ? "none" : "block";
-  chatParts.forEach(part => part.style.display = isPricing ? "" : "none");
-  pricingBtn.classList.toggle("active", !isPricing);
-  if (!isPricing) loadModelTools();
+  hideAllViews();
+  if (!isPricing) {
+    pricingView.style.display = "block";
+    chatParts.forEach(part => { part.style.display = "none"; });
+    pricingBtn.classList.add("active");
+    loadModelTools();
+  }
+});
+
+cleaningBtn.addEventListener("click", () => {
+  const isCleaning = cleaningView.style.display === "block";
+  hideAllViews();
+  if (!isCleaning) {
+    cleaningView.style.display = "block";
+    chatParts.forEach(part => { part.style.display = "none"; });
+    cleaningBtn.classList.add("active");
+  }
 });
 
 clearBtn.addEventListener("click", () => {
@@ -1034,6 +1329,237 @@ function showToast(msg) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove("show"), 5000);
 }
+
+// ═══════════════════════════════════════════════════════
+// DATA CLEANING PAGE
+// ═══════════════════════════════════════════════════════
+(function () {
+  const cleanFile      = document.getElementById("cleanFile");
+  const uploadZone     = document.getElementById("uploadZone");
+  const uploadFilename = document.getElementById("uploadFilename");
+  const sheetSelect    = document.getElementById("sheetSelect");
+  const analyseBtn     = document.getElementById("analyseBtn");
+  const cleanStatus    = document.getElementById("cleanStatus");
+  const planSection    = document.getElementById("planSection");
+  const planBody       = document.getElementById("planBody");
+  const planIntro      = document.getElementById("planIntro");
+  const applyBtn       = document.getElementById("applyBtn");
+  const downloadBtn    = document.getElementById("downloadCleanBtn");
+  const cleanLog       = document.getElementById("cleanLog");
+  const selectAllOps   = document.getElementById("selectAllOps");
+  const profileSection = document.getElementById("profileSection");
+  const profileGrid    = document.getElementById("profileGrid");
+
+  let uploadedFile  = null;
+  let currentPlan   = [];
+  let currentSheet  = "";
+  let cleanedBlob   = null;
+  let cleanedName   = "cleaned.xlsx";
+
+  // ── Drag-and-drop + click upload ──
+  uploadZone.addEventListener("dragover", e => { e.preventDefault(); uploadZone.classList.add("drag-over"); });
+  uploadZone.addEventListener("dragleave", () => uploadZone.classList.remove("drag-over"));
+  uploadZone.addEventListener("drop", e => {
+    e.preventDefault();
+    uploadZone.classList.remove("drag-over");
+    const f = e.dataTransfer.files[0];
+    if (f) handleFileSelected(f);
+  });
+  cleanFile.addEventListener("change", () => {
+    if (cleanFile.files[0]) handleFileSelected(cleanFile.files[0]);
+  });
+
+  function handleFileSelected(file) {
+    if (!file.name.match(/\.(xlsx?|csv)$/i)) {
+      setStatus("⚠️  Please upload an .xlsx, .xls or .csv file.", true);
+      return;
+    }
+    uploadedFile = file;
+    const isCsv = /\.csv$/i.test(file.name);
+    uploadFilename.textContent = `📄 ${file.name}  (${(file.size / 1024).toFixed(1)} KB)`;
+    uploadFilename.style.display = "block";
+    analyseBtn.disabled = false;
+    setStatus(isCsv
+      ? "CSV ready. Note: CSV has no cell colours, so orange-highlight checks are skipped. Click Analyse."
+      : "File ready. Choose a sheet and click Analyse.");
+    // Reset downstream
+    planSection.style.display   = "none";
+    profileSection.style.display = "none";
+    currentPlan  = [];
+    cleanedBlob  = null;
+    downloadBtn.style.display = "none";
+    cleanLog.style.display = "none";
+    // Pre-populate sheet select by reading the file headers client-side isn't easy;
+    // the sheet list comes back from /clean/analyse so we'll populate after the call.
+    if (isCsv) {
+      sheetSelect.innerHTML = '<option>— n/a for CSV —</option>';
+      sheetSelect.disabled  = true;
+    } else {
+      sheetSelect.innerHTML = '<option>— analysing… —</option>';
+      sheetSelect.disabled  = true;
+    }
+  }
+
+  // ── Analyse ──
+  analyseBtn.addEventListener("click", async () => {
+    if (!uploadedFile) return;
+    analyseBtn.disabled = true;
+    setStatus("⏳  Sending to LLM for analysis… this may take a few seconds.");
+    planSection.style.display   = "none";
+    profileSection.style.display = "none";
+
+    const form = new FormData();
+    form.append("file", uploadedFile);
+    const chosenSheet = sheetSelect.value;
+    if (chosenSheet && !chosenSheet.startsWith("—")) form.append("sheet", chosenSheet);
+
+    try {
+      const res  = await fetch(`${API_BASE}/clean/analyse`, { method: "POST", body: form });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
+      currentSheet = data.sheet;
+      currentPlan  = data.plan || [];
+      const isCsv = /\.csv$/i.test(uploadedFile.name);
+
+      // Populate sheet selector (single "Sheet1" placeholder for CSV)
+      sheetSelect.innerHTML = data.all_sheets
+        .map(s => `<option value="${s}"${s === data.sheet ? " selected" : ""}>${s}</option>`)
+        .join("");
+      sheetSelect.disabled  = isCsv || data.all_sheets.length <= 1;
+
+      // Re-analyse on sheet switch (xlsx only — CSV has one implicit sheet)
+      sheetSelect.onchange = isCsv ? null : () => analyseBtn.click();
+
+      const warnings = data.warnings || [];
+      const warningLine = warnings.length ? `\n⚠️ ${warnings.join(" ")}` : "";
+      setStatus(`✅  Analysis complete — ${data.n_rows} rows × ${data.n_cols} columns` +
+        (isCsv ? "" : ` in sheet "${data.sheet}"`) +
+        `. ${currentPlan.length} operations proposed.${warningLine}`);
+      renderPlan(currentPlan, data);
+      renderProfile(data.profile);
+
+    } catch (err) {
+      setStatus("❌  Error: " + err.message, true);
+    } finally {
+      analyseBtn.disabled = false;
+    }
+  });
+
+  // ── Render plan table ──
+  function renderPlan(plan, data) {
+    planIntro.textContent =
+      `The LLM reviewed ${data.n_cols} columns and proposed ${plan.length} cleaning steps. ` +
+      `Tick the ones you want to apply, then click Apply.`;
+
+    planBody.innerHTML = plan.map(op => `
+      <tr>
+        <td class="col-check"><input type="checkbox" class="op-check" data-id="${op.id}" checked></td>
+        <td style="font-family:var(--mono);font-size:11px;color:var(--muted)">${op.id}</td>
+        <td style="font-family:var(--mono);font-size:11px;word-break:break-all">${esc(op.column)}</td>
+        <td class="issue-text">${esc(op.issue)}</td>
+        <td><span class="action-pill">${esc(op.action)}</span></td>
+        <td class="rationale-text">${esc(op.rationale)}</td>
+      </tr>`).join("");
+
+    planSection.style.display = "block";
+    applyBtn.disabled = false;
+    downloadBtn.style.display = "none";
+  }
+
+  // ── Select-all toggle ──
+  selectAllOps.addEventListener("change", () => {
+    document.querySelectorAll(".op-check").forEach(cb => cb.checked = selectAllOps.checked);
+  });
+
+  // ── Apply ──
+  applyBtn.addEventListener("click", async () => {
+    if (!uploadedFile) return;
+    const checkedIds = new Set(
+      [...document.querySelectorAll(".op-check:checked")].map(cb => Number(cb.dataset.id))
+    );
+    const selectedPlan = currentPlan.filter(op => checkedIds.has(op.id));
+    if (selectedPlan.length === 0) {
+      setStatus("⚠️  No operations selected.", true);
+      return;
+    }
+
+    applyBtn.disabled = true;
+    setStatus(`⏳  Applying ${selectedPlan.length} operations…`);
+    cleanLog.style.display = "none";
+    downloadBtn.style.display = "none";
+
+    const form = new FormData();
+    form.append("file",  uploadedFile);
+    form.append("sheet", currentSheet);
+    form.append("plan",  JSON.stringify(selectedPlan));
+
+    try {
+      const res = await fetch(`${API_BASE}/clean/apply`, { method: "POST", body: form });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `HTTP ${res.status}`);
+      }
+
+      const logHeader = res.headers.get("X-Clean-Log") || "";
+      cleanedName = res.headers.get("Content-Disposition")
+        ?.match(/filename="?([^"]+)"?/)?.[1] || "cleaned.xlsx";
+
+      cleanedBlob = await res.blob();
+
+      // Show log
+      if (logHeader) {
+        cleanLog.textContent = logHeader.split(" | ").join("\n");
+        cleanLog.style.display = "block";
+      }
+
+      setStatus(`✅  Done! ${selectedPlan.length} operations applied. Click Download to save.`);
+      downloadBtn.style.display = "inline-block";
+
+    } catch (err) {
+      setStatus("❌  Apply error: " + err.message, true);
+    } finally {
+      applyBtn.disabled = false;
+    }
+  });
+
+  // ── Download ──
+  downloadBtn.addEventListener("click", () => {
+    if (!cleanedBlob) return;
+    const url = URL.createObjectURL(cleanedBlob);
+    const a   = document.createElement("a");
+    a.href     = url;
+    a.download = cleanedName;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // ── Profile cards ──
+  function renderProfile(columns) {
+    profileGrid.innerHTML = columns.map(col => {
+      const hasNulls    = col.null_count > 0;
+      const hasOutliers = col.iqr_outliers > 0;
+      const warnClass   = (hasNulls || hasOutliers) ? "pc-warn" : "";
+      let stats = `<div class="pc-stat">type: ${col.dtype}</div>`;
+      if (col.null_count !== undefined)
+        stats += `<div class="pc-stat ${hasNulls ? 'pc-warn' : ''}">nulls: ${col.null_count} (${col.null_pct}%)</div>`;
+      if (col.iqr_outliers !== undefined)
+        stats += `<div class="pc-stat ${hasOutliers ? 'pc-warn' : ''}">outliers: ${col.iqr_outliers}</div>`;
+      if (col.unique_count !== undefined)
+        stats += `<div class="pc-stat">unique: ${col.unique_count}</div>`;
+      return `<div class="profile-cell">
+        <div class="pc-name ${warnClass}">${esc(col.column)}</div>
+        ${stats}
+      </div>`;
+    }).join("");
+    profileSection.style.display = "block";
+  }
+
+  function setStatus(msg, isError = false) {
+    cleanStatus.textContent = msg;
+    cleanStatus.style.color = isError ? "var(--warn)" : "var(--muted)";
+  }
+})();
 
 // ═══════════════════════════════════════════════════════
 // Boot

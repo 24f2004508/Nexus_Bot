@@ -22,6 +22,8 @@ import os
 import pathlib
 import re
 from pathlib import Path
+from data_cleaning import data_cleaning_bp, init_cleaning
+
 
 #import anthropic
 from dotenv import load_dotenv
@@ -275,6 +277,10 @@ app = Flask(__name__)
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*")
 CORS(app, origins=CORS_ORIGINS)
 
+
+# right after `app = Flask(__name__)` and `CORS(app, ...)`
+app.register_blueprint(data_cleaning_bp)
+init_cleaning(client, MODEL)   # passes your existing Gemini client
 
 @app.route("/")
 def index():
